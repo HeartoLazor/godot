@@ -32,10 +32,12 @@
 #include "visual_server_globals.h"
 #include "visual_server_raster.h"
 #include "visual_server_viewport.h"
+#include "modules/godot_tracy/profiler.h"
 
 static const int z_range = VS::CANVAS_ITEM_Z_MAX - VS::CANVAS_ITEM_Z_MIN + 1;
 
 void VisualServerCanvas::_render_canvas_item_tree(Item *p_canvas_item, const Transform2D &p_transform, const Rect2 &p_clip_rect, const Color &p_modulate, RasterizerCanvas::Light *p_lights) {
+	ZoneScopedN("VisualServerCanvas::_render_canvas_item_tree");
 	memset(z_list, 0, z_range * sizeof(RasterizerCanvas::Item *));
 	memset(z_last_list, 0, z_range * sizeof(RasterizerCanvas::Item *));
 
@@ -86,6 +88,7 @@ void _mark_ysort_dirty(VisualServerCanvas::Item *ysort_owner, RID_Owner<VisualSe
 }
 
 void VisualServerCanvas::_render_canvas_item(Item *p_canvas_item, const Transform2D &p_transform, const Rect2 &p_clip_rect, const Color &p_modulate, int p_z, RasterizerCanvas::Item **z_list, RasterizerCanvas::Item **z_last_list, Item *p_canvas_clip, Item *p_material_owner) {
+	ZoneScopedN("VisualServerCanvas::_render_canvas_item");
 	Item *ci = p_canvas_item;
 
 	if (!ci->visible) {

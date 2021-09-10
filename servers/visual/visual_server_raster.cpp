@@ -37,6 +37,7 @@
 #include "visual_server_canvas.h"
 #include "visual_server_globals.h"
 #include "visual_server_scene.h"
+#include "modules/godot_tracy/profiler.h"
 
 // careful, these may run in different threads than the visual server
 
@@ -59,6 +60,7 @@ void VisualServerRaster::black_bars_set_images(RID p_left, RID p_top, RID p_righ
 }
 
 void VisualServerRaster::_draw_margins() {
+	ZoneScopedN("VisualServerRaster::draw_window_margins");
 	VSG::canvas_render->draw_window_margins(black_margin, black_image);
 };
 
@@ -95,6 +97,7 @@ void VisualServerRaster::request_frame_drawn_callback(Object *p_where, const Str
 }
 
 void VisualServerRaster::draw(bool p_swap_buffers, double frame_step) {
+	ZoneScopedN("VisualServerRaster::draw");
 	//needs to be done before changes is reset to 0, to not force the editor to redraw
 	VS::get_singleton()->emit_signal("frame_pre_draw");
 

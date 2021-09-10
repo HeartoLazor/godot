@@ -36,6 +36,7 @@
 #include "core/os/os.h"
 #include "core/project_settings.h"
 #include "core/script_language.h"
+#include "modules/godot_tracy/profiler.h"
 
 #define FLUSH_QUERY_CHECK(m_object) \
 	ERR_FAIL_COND_MSG(m_object->get_space() && flushing_queries, "Can't change this state while flushing queries. Use call_deferred() or set_deferred() to change monitoring state instead.");
@@ -1207,6 +1208,7 @@ void Physics2DServerSW::init() {
 };
 
 void Physics2DServerSW::step(real_t p_step) {
+	ZoneScopedN("Physics2DServerSW::step");
 	if (!active) {
 		return;
 	}

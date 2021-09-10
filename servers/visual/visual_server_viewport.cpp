@@ -34,6 +34,7 @@
 #include "visual_server_canvas.h"
 #include "visual_server_globals.h"
 #include "visual_server_scene.h"
+#include "modules/godot_tracy/profiler.h"
 
 static Transform2D _canvas_get_transform(VisualServerViewport::Viewport *p_viewport, VisualServerCanvas::Canvas *p_canvas, VisualServerViewport::Viewport::CanvasData *p_canvas_data, const Vector2 &p_vp_size) {
 	Transform2D xf = p_viewport->global_transform;
@@ -65,6 +66,7 @@ static Transform2D _canvas_get_transform(VisualServerViewport::Viewport *p_viewp
 }
 
 void VisualServerViewport::_draw_3d(Viewport *p_viewport, ARVRInterface::Eyes p_eye) {
+	ZoneScopedN("VisualServerViewport::_draw_3d");
 	Ref<ARVRInterface> arvr_interface;
 	if (ARVRServer::get_singleton() != nullptr) {
 		arvr_interface = ARVRServer::get_singleton()->get_primary_interface();
@@ -78,6 +80,7 @@ void VisualServerViewport::_draw_3d(Viewport *p_viewport, ARVRInterface::Eyes p_
 }
 
 void VisualServerViewport::_draw_viewport(Viewport *p_viewport, ARVRInterface::Eyes p_eye) {
+	ZoneScopedN("VisualServerViewport::_draw_viewport");
 	/* Camera should always be BEFORE any other 3D */
 
 	bool scenario_draw_canvas_bg = false; //draw canvas, or some layer of it, as BG for 3D instead of in front
@@ -254,6 +257,7 @@ void VisualServerViewport::_draw_viewport(Viewport *p_viewport, ARVRInterface::E
 }
 
 void VisualServerViewport::draw_viewports() {
+	ZoneScopedN("VisualServerViewport::draw_viewports");
 	// get our arvr interface in case we need it
 	Ref<ARVRInterface> arvr_interface;
 

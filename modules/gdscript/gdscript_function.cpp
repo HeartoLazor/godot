@@ -33,6 +33,7 @@
 #include "core/os/os.h"
 #include "gdscript.h"
 #include "gdscript_functions.h"
+#include "modules/godot_tracy/profiler.h"
 
 Variant *GDScriptFunction::_get_variant(int p_address, GDScriptInstance *p_instance, GDScript *p_script, Variant &self, Variant &static_ref, Variant *p_stack, String &r_error) const {
 	int address = p_address & ADDR_MASK;
@@ -252,6 +253,7 @@ String GDScriptFunction::_get_call_error(const Variant::CallError &p_err, const 
 #endif
 
 Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_args, int p_argcount, Variant::CallError &r_err, CallState *p_state) {
+	ZoneScopedN("GDScriptFunction::call");
 	OPCODES_TABLE;
 
 	if (!_code_ptr) {

@@ -39,6 +39,7 @@
 #include "core/reference.h"
 #include "core/variant_parser.h"
 #include "gdscript.h"
+#include "modules/godot_tracy/profiler.h"
 
 const char *GDScriptFunctions::get_func_name(Function p_func) {
 	ERR_FAIL_INDEX_V(p_func, FUNC_MAX, "");
@@ -141,6 +142,7 @@ const char *GDScriptFunctions::get_func_name(Function p_func) {
 }
 
 void GDScriptFunctions::call(Function p_func, const Variant **p_args, int p_arg_count, Variant &r_ret, Variant::CallError &r_error) {
+	ZoneScopedN("GDScriptFunctions::call");
 	r_error.error = Variant::CallError::CALL_OK;
 #ifdef DEBUG_ENABLED
 

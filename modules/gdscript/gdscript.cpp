@@ -38,6 +38,7 @@
 #include "core/os/os.h"
 #include "core/project_settings.h"
 #include "gdscript_compiler.h"
+#include "modules/godot_tracy/profiler.h"
 
 ///////////////////////////
 
@@ -654,6 +655,7 @@ void GDScript::get_members(Set<StringName> *p_members) {
 }
 
 Variant GDScript::call(const StringName &p_method, const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
+	ZoneScopedN("GDScript::call");
 	GDScript *top = this;
 	while (top) {
 		Map<StringName, GDScriptFunction *>::Element *E = top->member_functions.find(p_method);
@@ -1189,6 +1191,7 @@ bool GDScriptInstance::has_method(const StringName &p_method) const {
 	return false;
 }
 Variant GDScriptInstance::call(const StringName &p_method, const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
+	ZoneScopedN("GDScriptInstance::call");
 	GDScript *sptr = script.ptr();
 	while (sptr) {
 		Map<StringName, GDScriptFunction *>::Element *E = sptr->member_functions.find(p_method);

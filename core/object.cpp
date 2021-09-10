@@ -39,6 +39,7 @@
 #include "core/resource.h"
 #include "core/script_language.h"
 #include "core/translation.h"
+#include "modules/godot_tracy/profiler.h"
 
 #ifdef DEBUG_ENABLED
 
@@ -738,6 +739,7 @@ static void _test_call_error(const StringName &p_func, const Variant::CallError 
 #endif
 
 void Object::call_multilevel(const StringName &p_method, const Variant **p_args, int p_argcount) {
+	ZoneScopedN("Object::call_multilevel");
 	if (p_method == CoreStringNames::get_singleton()->_free) {
 #ifdef DEBUG_ENABLED
 		ERR_FAIL_COND_MSG(Object::cast_to<Reference>(this), "Can't 'free' a reference.");
@@ -814,6 +816,7 @@ void Object::setvar(const Variant &p_key, const Variant &p_value, bool *r_valid)
 }
 
 Variant Object::callv(const StringName &p_method, const Array &p_args) {
+	ZoneScopedN("Object::callv");
 	const Variant **argptrs = nullptr;
 
 	if (p_args.size() > 0) {
@@ -832,6 +835,7 @@ Variant Object::callv(const StringName &p_method, const Array &p_args) {
 }
 
 Variant Object::call(const StringName &p_name, VARIANT_ARG_DECLARE) {
+	ZoneScopedN("Object::call VARIANT_ARG_DECLARE");
 	VARIANT_ARGPTRS;
 
 	int argc = 0;
@@ -849,6 +853,7 @@ Variant Object::call(const StringName &p_name, VARIANT_ARG_DECLARE) {
 }
 
 void Object::call_multilevel(const StringName &p_name, VARIANT_ARG_DECLARE) {
+	ZoneScopedN("Object::call_multilevel VARIANT_ARG_DECLARE");
 	VARIANT_ARGPTRS;
 
 	int argc = 0;
@@ -864,6 +869,7 @@ void Object::call_multilevel(const StringName &p_name, VARIANT_ARG_DECLARE) {
 }
 
 Variant Object::call(const StringName &p_method, const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
+	ZoneScopedN("Object::call");
 	r_error.error = Variant::CallError::CALL_OK;
 
 	if (p_method == CoreStringNames::get_singleton()->_free) {
@@ -924,6 +930,7 @@ Variant Object::call(const StringName &p_method, const Variant **p_args, int p_a
 }
 
 void Object::notification(int p_notification, bool p_reversed) {
+	ZoneScopedN("Object::notification");
 	_notificationv(p_notification, p_reversed);
 
 	if (script_instance) {

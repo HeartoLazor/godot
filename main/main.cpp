@@ -86,6 +86,8 @@
 #endif
 #endif
 
+#include "modules/godot_tracy/profiler.h"
+
 /* Static members */
 
 // Singletons
@@ -2194,6 +2196,7 @@ static uint64_t frame_delta_sync_time = 0;
 #endif
 
 bool Main::iteration() {
+	ZoneScopedN("Main::iteration");
 	//for now do not error on this
 	//ERR_FAIL_COND_V(iterating, false);
 

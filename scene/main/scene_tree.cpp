@@ -57,6 +57,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "modules/godot_tracy/profiler.h"
+
 void SceneTreeTimer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_time_left", "time"), &SceneTreeTimer::set_time_left);
 	ClassDB::bind_method(D_METHOD("get_time_left"), &SceneTreeTimer::get_time_left);
@@ -180,6 +182,7 @@ void SceneTree::make_group_changed(const StringName &p_group) {
 }
 
 void SceneTree::flush_transform_notifications() {
+	ZoneScopedN("SceneTree::flush_transform_notifications");
 	SelfList<Node> *n = xform_change_list.first();
 	while (n) {
 		Node *node = n->self();
@@ -191,6 +194,7 @@ void SceneTree::flush_transform_notifications() {
 }
 
 void SceneTree::_flush_ugc() {
+	ZoneScopedN("SceneTree::_flush_ugc");
 	ugc_locked = true;
 
 	while (unique_group_calls.size()) {
@@ -232,6 +236,7 @@ void SceneTree::_update_group_order(Group &g, bool p_use_priority) {
 }
 
 void SceneTree::call_group_flags(uint32_t p_call_flags, const StringName &p_group, const StringName &p_function, VARIANT_ARG_DECLARE) {
+	ZoneScopedN("SceneTree::call_group_flags");
 	Map<StringName, Group>::Element *E = group_map.find(p_group);
 	if (!E) {
 		return;
@@ -316,6 +321,7 @@ void SceneTree::call_group_flags(uint32_t p_call_flags, const StringName &p_grou
 }
 
 void SceneTree::notify_group_flags(uint32_t p_call_flags, const StringName &p_group, int p_notification) {
+	ZoneScopedN("SceneTree::notify_group_flags");
 	Map<StringName, Group>::Element *E = group_map.find(p_group);
 	if (!E) {
 		return;
@@ -446,6 +452,7 @@ bool SceneTree::is_input_handled() {
 }
 
 void SceneTree::input_event(const Ref<InputEvent> &p_event) {
+	ZoneScopedN("SceneTree::input_event");
 	if (Engine::get_singleton()->is_editor_hint() && (Object::cast_to<InputEventJoypadButton>(p_event.ptr()) || Object::cast_to<InputEventJoypadMotion>(*p_event))) {
 		return; //avoid joy input on editor
 	}
@@ -534,6 +541,7 @@ void SceneTree::iteration_end() {
 }
 
 bool SceneTree::iteration(float p_time) {
+	ZoneScopedN("SceneTree::iteration");
 	root_lock++;
 
 	current_frame++;
@@ -584,6 +592,7 @@ void SceneTree::_update_font_oversampling(float p_ratio) {
 }
 
 bool SceneTree::idle(float p_time) {
+	ZoneScopedN("SceneTree::idle");
 	//print_line("ram: "+itos(OS::get_singleton()->get_static_memory_usage())+" sram: "+itos(OS::get_singleton()->get_dynamic_memory_usage()));
 	//print_line("node count: "+itos(get_node_count()));
 	//print_line("TEXTURE RAM: "+itos(VS::get_singleton()->get_render_info(VS::INFO_TEXTURE_MEM_USED)));
@@ -1069,6 +1078,7 @@ void SceneTree::_call_input_pause(const StringName &p_group, const StringName &p
 }
 
 void SceneTree::_notify_group_pause(const StringName &p_group, int p_notification) {
+	ZoneScopedN("SceneTree::_notify_group_pause");
 	Map<StringName, Group>::Element *E = group_map.find(p_group);
 	if (!E) {
 		return;

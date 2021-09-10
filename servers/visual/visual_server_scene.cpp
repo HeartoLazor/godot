@@ -36,6 +36,7 @@
 #include "visual_server_raster.h"
 
 #include <new>
+#include "modules/godot_tracy/profiler.h"
 
 /* CAMERA API */
 
@@ -4228,6 +4229,7 @@ bool VisualServerScene::_check_gi_probe(Instance *p_gi_probe) {
 }
 
 void VisualServerScene::render_probes() {
+	ZoneScopedN("VisualServerScene::render_probes");
 	/* REFLECTION PROBES */
 
 	SelfList<InstanceReflectionProbeData> *ref_probe = reflection_probe_render_list.first();
@@ -4498,6 +4500,7 @@ void VisualServerScene::_update_dirty_instance(Instance *p_instance) {
 }
 
 void VisualServerScene::update_dirty_instances() {
+	ZoneScopedN("VisualServerScene::update_dirty_instances");
 	VSG::storage->update_dirty_resources();
 
 	// this is just to get access to scenario so we can update the spatial partitioning scheme

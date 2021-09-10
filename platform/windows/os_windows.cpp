@@ -53,6 +53,8 @@
 #include <regstr.h>
 #include <shlobj.h>
 
+#include "modules/godot_tracy/profiler.h"
+
 static const WORD MAX_CONSOLE_LINES = 1500;
 
 extern "C" {
@@ -2590,6 +2592,7 @@ uint64_t OS_Windows::get_ticks_usec() const {
 }
 
 void OS_Windows::process_events() {
+	ZoneScopedN("OS_Windows::process_events");
 	MSG msg;
 
 	if (!drop_events) {
@@ -3542,6 +3545,7 @@ void OS_Windows::run() {
 		process_events(); // get rid of pending events
 		if (Main::iteration())
 			break;
+		FrameMark;
 	};
 
 	main_loop->finish();

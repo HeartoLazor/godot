@@ -31,6 +31,7 @@
 #include "main_loop.h"
 
 #include "core/script_language.h"
+#include "modules/godot_tracy/profiler.h"
 
 void MainLoop::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("input_event", "event"), &MainLoop::input_event);
@@ -100,6 +101,7 @@ void MainLoop::init() {
 	}
 }
 bool MainLoop::iteration(float p_time) {
+	ZoneScopedN("MainLoop::iteration");
 	if (get_script_instance()) {
 		return get_script_instance()->call("_iteration", p_time);
 	}
