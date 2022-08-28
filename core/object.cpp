@@ -40,6 +40,7 @@
 #include "core/script_language.h"
 #include "core/translation.h"
 #include "modules/godot_tracy/profiler.h"
+#include "modules/gdscript/gdscript.h"
 
 #ifdef DEBUG_ENABLED
 
@@ -817,6 +818,8 @@ void Object::setvar(const Variant &p_key, const Variant &p_value, bool *r_valid)
 
 Variant Object::callv(const StringName &p_method, const Array &p_args) {
 	ZoneScopedN("Object::callv");
+	const char* zone_name = (String(get_save_class()) + ":" + String(get_script_file_name()) + ":" + String(p_method)).utf8().get_data();
+	ZoneName(zone_name, strlen(zone_name));
 	const Variant **argptrs = nullptr;
 
 	if (p_args.size() > 0) {
@@ -836,6 +839,8 @@ Variant Object::callv(const StringName &p_method, const Array &p_args) {
 
 Variant Object::call(const StringName &p_name, VARIANT_ARG_DECLARE) {
 	ZoneScopedN("Object::call VARIANT_ARG_DECLARE");
+	const char* zone_name = (String(get_save_class()) + ":" + String(get_script_file_name()) + ":" + String(p_name)).utf8().get_data();
+	ZoneName(zone_name, strlen(zone_name));
 	VARIANT_ARGPTRS;
 
 	int argc = 0;
@@ -868,8 +873,33 @@ void Object::call_multilevel(const StringName &p_name, VARIANT_ARG_DECLARE) {
 	call_multilevel(p_name, argptr, argc);
 }
 
+String Object::get_script_file_name()
+{
+	String script_name = String("");
+	if(script_instance)
+	{
+		GDScript* scr = static_cast<GDScript*>(script_instance->get_script().ptr());
+		if (scr)
+		{
+			script_name = scr->get_script_class_name();
+		}
+	}
+	return script_name;
+}
+
 Variant Object::call(const StringName &p_method, const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
 	ZoneScopedN("Object::call");
+	const char* zone_name;
+	if (p_method == "load_from_path")
+	{
+		StringName load_path = *p_args[0];
+		zone_name = (String(get_save_class()) + ":" + String(get_script_file_name()) + ":load_from_path:" + String(load_path)).utf8().get_data();
+	}
+	else
+	{
+		zone_name = (String(get_save_class()) + ":" + String(get_script_file_name()) + ":" + String(p_method)).utf8().get_data();
+	}
+	ZoneName(zone_name, strlen(zone_name));
 	r_error.error = Variant::CallError::CALL_OK;
 
 	if (p_method == CoreStringNames::get_singleton()->_free) {
@@ -931,6 +961,8 @@ Variant Object::call(const StringName &p_method, const Variant **p_args, int p_a
 
 void Object::notification(int p_notification, bool p_reversed) {
 	ZoneScopedN("Object::notification");
+	const char* zone_name = (String(get_save_class()) + ":" + String(get_script_file_name()) + ":" + String(itos(p_notification))).utf8().get_data();
+	ZoneName(zone_name, strlen(zone_name));
 	_notificationv(p_notification, p_reversed);
 
 	if (script_instance) {
@@ -1144,7 +1176,11 @@ struct _ObjectSignalDisconnectData {
 	StringName method;
 };
 
-Variant Object::_emit_signal(const Variant **p_args, int p_argcount, Variant::CallError &r_error) {
+Variant Object::_emit_signal(const Variant** p_args, int p_argcount, Variant::CallError& r_error) {
+	ZoneScopedN("Object::call");
+	StringName signal_name = *p_args[0];
+	const char* zone_name = (String(get_save_class()) + ":" + String(get_script_file_name()) + ":" + String(signal_name)).utf8().get_data();
+	ZoneName(zone_name, strlen(zone_name));
 	r_error.error = Variant::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS;
 
 	ERR_FAIL_COND_V(p_argcount < 1, Variant());
@@ -1171,7 +1207,7 @@ Variant Object::_emit_signal(const Variant **p_args, int p_argcount, Variant::Ca
 	return Variant();
 }
 
-Error Object::emit_signal(const StringName &p_name, const Variant **p_args, int p_argcount) {
+Error Object::emit_signal(const StringName& p_name, const Variant** p_args, int p_argcount) {
 	if (_block_signals) {
 		return ERR_CANT_ACQUIRE_RESOURCE; //no emit, signals blocked
 	}
