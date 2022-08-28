@@ -873,15 +873,18 @@ void Object::call_multilevel(const StringName &p_name, VARIANT_ARG_DECLARE) {
 	call_multilevel(p_name, argptr, argc);
 }
 
-String Object::get_script_file_name()
+const String& Object::get_script_file_name()
 {
 	String script_name = String("");
 	if(script_instance)
 	{
-		GDScript* scr = static_cast<GDScript*>(script_instance->get_script().ptr());
-		if (scr)
+		if (script_instance->get_script().ptr()->is_class("GDScript"))
 		{
-			script_name = scr->get_script_class_name();
+			GDScript* scr = static_cast<GDScript*>(script_instance->get_script().ptr());
+			if (scr)
+			{
+				script_name = scr->get_script_class_name();
+			}
 		}
 	}
 	return script_name;
