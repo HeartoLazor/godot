@@ -5,7 +5,7 @@ on: [push, pull_request]
 env:
   # Only used for the cache key. Increment version to force clean build.
   GODOT_BASE_BRANCH: 3.5
-  SCONSFLAGS: verbose=yes warnings=all werror=yes debug_symbols=no
+  SCONSFLAGS: verbose=yes warnings=all werror=yes debug_symbols=no module_godot_tracy_enabled=true
   EM_VERSION: 3.1.10
   EM_CACHE_FOLDER: "emsdk-cache"
 
